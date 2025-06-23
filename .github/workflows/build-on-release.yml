@@ -12,14 +12,20 @@ jobs:
       - name: Checkout del código
         uses: actions/checkout@v4
 
+      - name: Mostrar ruta del workspace
+        run: |
+          Write-Host "GITHUB_WORKSPACE: $env:GITHUB_WORKSPACE"
+
       - name: Compilar con Delphi
         run: |
           echo "Compilando con dcc32 desde el workspace"
-          "C:\Program Files (x86)\Embarcadero\Studio\18.0\bin\dcc32.exe" "%GITHUB_WORKSPACE%\ProyectoDelphi.dpr"
+          "C:\Program Files (x86)\Embarcadero\Studio\18.0\bin\dcc32.exe" "$env:GITHUB_WORKSPACE\ProyectoDelphi.dpr"
+        continue-on-error: false  # Detiene el flujo si falla
 
       - name: Subir ejecutable a la release
+        if: success()  # Solo si la compilación fue exitosa
         uses: softprops/action-gh-release@v1
         with:
-          files: "${{ github.workspace }}/src/MiProyecto.exe"
+          files: "${{ github.workspace }}/ProyectoDelphi.exe"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
