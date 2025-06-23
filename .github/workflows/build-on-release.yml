@@ -1,0 +1,25 @@
+name: Build Delphi on Release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Compilar con Delphi
+        run: |
+          echo "Compilando con dcc32 desde el workspace"
+          "C:\Program Files (x86)\Embarcadero\Studio\18.0\bin\dcc32.exe" "%GITHUB_WORKSPACE%\ProyectoDelphi.dpr"
+
+      - name: Subir ejecutable a la release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: "${{ github.workspace }}/src/MiProyecto.exe"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
