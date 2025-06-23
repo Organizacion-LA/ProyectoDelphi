@@ -6,19 +6,20 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted  # Esto hace que se ejecute en tu máquina local
+    runs-on: self-hosted
+
     steps:
-      - name: Checkout del repositorio
+      - name: Checkout del código
         uses: actions/checkout@v4
 
-      - name: Compilar con Delphi XE10
+      - name: Compilar con Delphi
         run: |
-          echo "Iniciando compilación con Delphi..."
-          "C:\Program Files (x86)\Embarcadero\Studio\18.0\bin\msbuild.exe" "C:\ruta\a\TuProyecto.dproj" /t:Build /p:Config=Release /p:Platform=Win32
+          echo "Compilando con dcc32 desde el workspace"
+          "C:\Program Files (x86)\Embarcadero\Studio\18.0\bin\dcc32.exe" "%GITHUB_WORKSPACE%\ProyectoDelphi.dpr"
 
       - name: Subir ejecutable a la release
         uses: softprops/action-gh-release@v1
         with:
-          files: "C:\ruta\a\TuEjecutable.exe"
+          files: "${{ github.workspace }}/src/MiProyecto.exe"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
