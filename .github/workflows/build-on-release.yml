@@ -31,6 +31,12 @@ jobs:
         shell: pwsh
         continue-on-error: false
 
+      - name: Comprimir ejecutable
+        if: success()
+        run: |
+          Compress-Archive -Path "$env:GITHUB_WORKSPACE\ProyectoDelphi.exe" -DestinationPath "$env:GITHUB_WORKSPACE\ProyectoDelphi.zip"
+        shell: pwsh
+
       - name: Subir log de error si falla
         if: failure()
         uses: actions/upload-artifact@v4
@@ -38,10 +44,10 @@ jobs:
           name: log-de-compilacion
           path: ${{ github.workspace }}/build.log
 
-      - name: Subir ejecutable a la release
+      - name: Subir ejecutable a la release (zip)
         if: success()
         uses: softprops/action-gh-release@v1
         with:
-          files: "${{ github.workspace }}/ProyectoDelphi.exe"
+          files: "${{ github.workspace }}/ProyectoDelphi.zip"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
