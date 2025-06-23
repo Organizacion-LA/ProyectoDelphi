@@ -1,0 +1,24 @@
+name: Build Delphi on Release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: self-hosted  # Esto hace que se ejecute en tu máquina local
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Compilar con Delphi XE10
+        run: |
+          echo "Iniciando compilación con Delphi..."
+          "C:\Program Files (x86)\Embarcadero\Studio\18.0\bin\msbuild.exe" "C:\ruta\a\TuProyecto.dproj" /t:Build /p:Config=Release /p:Platform=Win32
+
+      - name: Subir ejecutable a la release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: "C:\ruta\a\TuEjecutable.exe"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
