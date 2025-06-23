@@ -28,7 +28,7 @@ implementation
 
 procedure TForm1.Button1Click(Sender: TObject);
 begin
-  ShowMessage('Hola, bienvenido al sistema');
+  ShowMessage('Hola, bienvenido al sistema!!');
 end;
 
 end.
