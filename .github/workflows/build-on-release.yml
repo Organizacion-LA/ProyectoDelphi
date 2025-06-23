@@ -15,15 +15,31 @@ jobs:
       - name: Mostrar ruta del workspace
         run: |
           Write-Host "GITHUB_WORKSPACE: $env:GITHUB_WORKSPACE"
+        shell: pwsh
 
       - name: Compilar con Delphi
+        id: build
         run: |
           echo "Compilando con dcc32 desde el workspace"
-          "C:\Program Files (x86)\Embarcadero\Studio\18.0\bin\dcc32.exe" "$env:GITHUB_WORKSPACE\ProyectoDelphi.dpr"
-        continue-on-error: false  # Detiene el flujo si falla
+          $project = "$env:GITHUB_WORKSPACE\ProyectoDelphi.dpr"
+          $log = "$env:GITHUB_WORKSPACE\build.log"
+          & "C:\Program Files (x86)\Embarcadero\Studio\18.0\bin\dcc32.exe" $project *>&1 | Tee-Object -FilePath $log
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "Error de compilación. Guardando log..."
+            exit 1
+          }
+        shell: pwsh
+        continue-on-error: false
+
+      - name: Subir log de error si falla
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: log-de-compilacion
+          path: ${{ github.workspace }}/build.log
 
       - name: Subir ejecutable a la release
-        if: success()  # Solo si la compilación fue exitosa
+        if: success()
         uses: softprops/action-gh-release@v1
         with:
           files: "${{ github.workspace }}/ProyectoDelphi.exe"
