@@ -55,8 +55,7 @@ jobs:
         if: success()
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            ProyectoDelphi.zip
+         files: |
+          ProyectoDelphi.zip
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        working-directory: ${{ github.workspace }}
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
