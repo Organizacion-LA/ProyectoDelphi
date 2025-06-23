@@ -12,11 +12,6 @@ jobs:
       - name: Checkout del código
         uses: actions/checkout@v4
 
-      - name: Mostrar ruta del workspace
-        run: |
-          Write-Host "GITHUB_WORKSPACE: $env:GITHUB_WORKSPACE"
-        shell: pwsh
-
       - name: Compilar con Delphi
         id: build
         run: |
@@ -37,6 +32,18 @@ jobs:
           Compress-Archive -Path "$env:GITHUB_WORKSPACE\ProyectoDelphi.exe" -DestinationPath "$env:GITHUB_WORKSPACE\ProyectoDelphi.zip"
         shell: pwsh
 
+      - name: Verificar existencia del .zip
+        if: success()
+        run: |
+          $zipPath = "$env:GITHUB_WORKSPACE\ProyectoDelphi.zip"
+          if (Test-Path $zipPath) {
+            Write-Host "✅ El archivo zip fue creado correctamente: $zipPath"
+          } else {
+            Write-Host "❌ No se encontró el zip. Falló la compresión."
+            exit 1
+          }
+        shell: pwsh
+
       - name: Subir log de error si falla
         if: failure()
         uses: actions/upload-artifact@v4
@@ -48,6 +55,8 @@ jobs:
         if: success()
         uses: softprops/action-gh-release@v1
         with:
-          files: "${{ github.workspace }}/ProyectoDelphi.zip"
+          files: |
+            ProyectoDelphi.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        working-directory: ${{ github.workspace }}
